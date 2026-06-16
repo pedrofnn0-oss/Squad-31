@@ -323,6 +323,80 @@ export async function adicionarAlunoTurma(turmaId: string, alunoId: string): Pro
   await api.post(`/turmas/${turmaId}/alunos`, { alunoId })
 }
 
+  /* ── Instituições (ms-autenticacao) ──────────────────────── */
+
+  export interface Instituicao {
+    id: string
+    nome: string
+    municipio: string
+    codigoInep: string
+    ativo: boolean
+    criadoEm: string
+  }
+
+  export async function listarInstituicoes(): Promise<Instituicao[]> {
+    const { data } = await api.get<Instituicao[]>('/instituicoes')
+    return data
+  }
+
+  export async function criarInstituicao(payload: {
+    nome: string
+    municipio: string
+    codigoInep: string
+  }): Promise<Instituicao> {
+    const { data } = await api.post<Instituicao>('/instituicoes', payload)
+    return data
+  }
+
+  /* ── Agendamento de prova prática (ms-autenticacao) ──────── */
+
+  export interface SlotProva {
+    id: string
+    moduloId: string
+    data: string
+    local: string
+    vagasTotais: number
+    vagasOcupadas: number
+    vagasDisponiveis: number
+  }
+
+  export interface AgendamentoProva {
+    id: string
+    alunoId: string
+    slotId: string
+    dataProva: string | null
+    local: string | null
+  }
+
+  export async function listarSlotsDisponiveis(): Promise<SlotProva[]> {
+    const { data } = await api.get<SlotProva[]>('/agendamentos/slots')
+    return data
+  }
+
+  export async function listarMeusAgendamentos(): Promise<AgendamentoProva[]> {
+    const { data } = await api.get<AgendamentoProva[]>('/agendamentos/meus')
+    return data
+  }
+
+  export async function agendarProva(slotId: string): Promise<AgendamentoProva> {
+    const { data } = await api.post<AgendamentoProva>('/agendamentos', { slotId })
+    return data
+  }
+
+  export async function reagendarProva(
+    agendamentoId: string,
+    novoSlotId: string,
+  ): Promise<AgendamentoProva> {
+    const { data } = await api.put<AgendamentoProva>(/agendamentos/${agendamentoId}, {
+      novoSlotId,
+    })
+    return data
+  }
+
+  export async function cancelarAgendamento(agendamentoId: string): Promise<void> {
+    await api.delete(/agendamentos/${agendamentoId})
+  }
+
 /* ── Usuários Admin (ms-autenticacao) ────────────────────── */
 
 export interface Usuario {
